@@ -6,25 +6,57 @@ on:
   pull_request:
     branches: [master]
 
+permissions:
+  # deployments permission to deploy GitHub pages website
+  deployments: write
+  # contents permission to update benchmark contents in gh-pages branch
+  contents: write
+
 env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  build:
+  benchmark:
+    name: Performance regression check
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v2
-      # Install nightly toolchain
-      - name: Install latest nightly
-        uses: actions-rs/toolchain@v1
+      - uses: actions/setup-go@v1
+      # Run benchmark with `go test -bench` and stores the output to a file
+      - name: Run benchmark
+        run: cargo +nightly bench | tee output.txt
+      # Download previous benchmark result from cache (if exists)
+      - name: Download previous benchmark data
+        uses: actions/cache@v1
         with:
-          toolchain: nightly
-          override: false
-          components: rustfmt, clippy
-      # - name: Build
-      #   run: cargo build --verbose
-      # - name: Run tests
-      #   run: cargo test --verbose
-      - name: Run bench
-        run: cargo +nightly bench --verbose
+          path: ./cache
+          key: ${{ runner.os }}-benchmark
+      # Run `github-action-benchmark` action
+      - name: Store benchmark result
+        uses: benchmark-action/github-action-benchmark@v1
+        with:
+          # What benchmark tool the output.txt came from
+          tool: "cargo"
+          # Where the output from the benchmark tool is stored
+          output-file-path: output.txt
+          # Where the previous data file is stored
+          external-data-json-path: ./cache/benchmark-data.json
+          # Workflow will fail when an alert happens
+          fail-on-alert: true
+      # Upload the updated cache file for the next job by actions/cache
+      - name: Store benchmark result
+        uses: benchmark-action/github-action-benchmark@v1
+        with:
+          tool: "cargo"
+          output-file-path: output.txt
+          external-data-json-path: ./cache/benchmark-data.json
+          fail-on-alert: true
+          # GitHub API token to make a commit comment
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          # Enable alert commit comment
+          comment-on-alert: true
+          # Mention in the commit comment
+          alert-comment-cc-users: "@kpovnych-elastio"
+      # Push gh-pages branch by yourself
+      - name: Push benchmark result
+        run: git push 'https://you:${{ secrets.GITHUB_TOKEN }}@git@github.com:kostiantyn-povnych/sandbox.git' gh-pages:gh-pages
