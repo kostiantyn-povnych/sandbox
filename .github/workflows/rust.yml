@@ -65,4 +65,4 @@ jobs:
           auto-push: false
       # Push gh-pages branch by yourself
       - name: Push benchmark result
-        run: git push 'https://kostiantyn-povnych:${{ secrets.GITHUB_TOKEN }}@git@github.com:kostiantyn-povnych/sandbox.git' gh-pages:gh-pages
+        run: git push 'https://kostiantyn-povnych:${{ secrets.GITHUB_TOKEN }}@git@github.com:kostiantyn-povnych/sandbox.git' master:master
