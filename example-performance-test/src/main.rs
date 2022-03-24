@@ -15,6 +15,6 @@ mod tests {
 
     #[bench]
     fn bench1(b: &mut Bencher) {
-        b.iter(|| std::thread::sleep(std::time::Duration::from_millis(1000)));
+        b.iter(|| std::thread::sleep(std::time::Duration::from_millis(100)));
     }
 }
