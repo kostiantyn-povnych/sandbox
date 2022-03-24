@@ -64,4 +64,4 @@ jobs:
           alert-comment-cc-users: "@kpovnych-elastio"
       # Push gh-pages branch by yourself
       - name: Push benchmark result
-        run: git push 'https://you:${{ secrets.GITHUB_TOKEN }}@git@github.com:kostiantyn-povnych/sandbox.git' gh-pages:gh-pages
+        run: git push 'https://kostiantyn-povnych:${{ secrets.GITHUB_TOKEN }}@git@github.com:kostiantyn-povnych/sandbox.git' gh-pages:gh-pages
