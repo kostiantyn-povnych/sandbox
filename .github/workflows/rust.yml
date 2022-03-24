@@ -38,31 +38,13 @@ jobs:
           key: ${{ runner.os }}-benchmark
       # Run `github-action-benchmark` action
       - name: Store benchmark result
-        uses: benchmark-action/github-action-benchmark@v1
-        with:
-          # What benchmark tool the output.txt came from
-          tool: "cargo"
-          # Where the output from the benchmark tool is stored
+          tool: 'cargo'
           output-file-path: output.txt
-          # Where the previous data file is stored
-          external-data-json-path: ./cache/benchmark-data.json
-          # Workflow will fail when an alert happens
-          fail-on-alert: true
-      # Upload the updated cache file for the next job by actions/cache
-      - name: Store benchmark result
-        uses: benchmark-action/github-action-benchmark@v1
-        with:
-          tool: "cargo"
-          output-file-path: output.txt
-          external-data-json-path: ./cache/benchmark-data.json
-          fail-on-alert: true
-          # GitHub API token to make a commit comment
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          # Enable alert commit comment
+          auto-push: true
+          # Show alert with commit comment on detecting possible performance regression
+          alert-threshold: '200%'
           comment-on-alert: true
-          # Mention in the commit comment
-          alert-comment-cc-users: "@kpovnych-elastio"
-          auto-push: false
-      # Push gh-pages branch by yourself
-      - name: Push benchmark result
-        run: git push 'https://kostiantyn-povnych:${{ secrets.GITHUB_TOKEN }}@git@github.com:kostiantyn-povnych/sandbox.git' master:master
+          fail-on-alert: true
+          alert-comment-cc-users: '@ktrz'
+     
