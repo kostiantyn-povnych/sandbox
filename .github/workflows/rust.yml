@@ -43,5 +43,4 @@ jobs:
           alert-threshold: '200%'
           comment-on-alert: true
           fail-on-alert: true
-          auto-push: true
      
