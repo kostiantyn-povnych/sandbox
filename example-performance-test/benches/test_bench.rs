@@ -1,16 +1,18 @@
-use criterion::{black_box, criterion_group, criterion_main, Criterion};
+#[macro_use]
+extern crate bencher;
 
-fn fibonacci(n: u64) -> u64 {
-    match n {
-        0 => 1,
-        1 => 1,
-        n => fibonacci(n - 1) + fibonacci(n - 2),
-    }
+use bencher::Bencher;
+
+fn a(bench: &mut Bencher) {
+    bench.iter(|| (0..1000).fold(0, |x, y| x + y))
 }
 
-fn criterion_benchmark(c: &mut Criterion) {
-    c.bench_function("fib 20", |b| b.iter(|| fibonacci(black_box(20))));
+fn b(bench: &mut Bencher) {
+    const N: usize = 1024;
+    bench.iter(|| vec![0u8; N]);
+
+    bench.bytes = N as u64;
 }
 
-criterion_group!(benches, criterion_benchmark);
-criterion_main!(benches);
+benchmark_group!(benches, a, b);
+benchmark_main!(benches);
